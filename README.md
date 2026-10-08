@@ -4,7 +4,7 @@
 
 ## 현재 상태
 
-만들기 전입니다. 아직 앱 코드는 없고 README.md, AGENTS.md, DECISIONS.md, PLAN.md만 있습니다.
+만들기 전입니다. 아직 앱 코드는 없고 README.md, AGENTS.md, DECISIONS.md, PLAN.md, PRD.md만 있습니다.
 
 - 만들 기능: 할 일 카드 만들기, 카드 상태 바꾸기(할 일 / 진행 중 / 완료)
 - 넣지 않는 기능: 앱 안의 AI 기능
@@ -17,6 +17,7 @@
 | AGENTS.md | AI가 이 프로젝트에서 일할 때 지키는 작업 규칙 |
 | DECISIONS.md | 사람이 확정한 결정 기록 |
 | PLAN.md | 이번 작업의 목표, 작업 목록, 검증 결과, 남은 문제 |
+| PRD.md | 첫 버전에서 만들 기능, 넣지 않는 기능, 요구사항 후보와 검토 |
 
 ## 시작 방법
 
