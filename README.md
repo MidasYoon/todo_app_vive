@@ -4,7 +4,7 @@
 
 ## 현재 상태
 
-만들기 전입니다. 아직 앱 코드는 없고 README.md, AGENTS.md, DECISIONS.md, PLAN.md, PRD.md, ARCHITECTURE.md만 있습니다.
+만들기 전입니다. 아직 앱 코드는 없고 README.md, AGENTS.md, DECISIONS.md, PLAN.md, PRD.md, ARCHITECTURE.md, SCREEN-SPEC.md만 있습니다.
 
 - 만들 기능과 넣지 않는 기능: PRD.md에 적었습니다.
 
@@ -18,6 +18,7 @@
 | PLAN.md | 이번 작업의 목표, 작업 목록, 검증 결과, 남은 문제 |
 | PRD.md | 첫 버전에서 만들 기능, 넣지 않는 기능, 요구사항 후보와 검토 |
 | ARCHITECTURE.md | 앱을 이루는 부분(화면·서버·저장소)과 각 부분의 책임 |
+| SCREEN-SPEC.md | 화면에서 보이는 것과 사용자가 할 수 있는 행동 |
 
 ## 시작 방법
 
