@@ -16,7 +16,7 @@
 | PRD.md | 있음 |
 | ARCHITECTURE.md | 있음 |
 | SCREEN-SPEC.md | 있음 |
-| DATA-MODEL.md | 없음 |
+| DATA-MODEL.md | 있음 |
 | API-SPEC.md | 없음 |
 | TEST-PLAN.md | 없음 |
 
@@ -30,7 +30,7 @@
 | P-04 | PRD.md 작성 | 완료 | PRD.md를 열면 만들 기능과 넣지 않는 기능이 목록으로 보이고, 정하지 않은 내용은 "아직 정하지 않음"으로 적혀 있다. README.md의 "프로젝트 문서" 표에 PRD.md가 있다. |
 | P-05 | ARCHITECTURE.md 작성 | 완료 | ARCHITECTURE.md를 열면 앱을 이루는 부분과 그 관계가 보이고, 사용할 기술은 사람이 정한 것만 적혀 있거나 "아직 정하지 않음"으로 적혀 있다. README.md 표에 ARCHITECTURE.md가 있다. |
 | P-06 | SCREEN-SPEC.md 작성 | 완료 | SCREEN-SPEC.md를 열면 화면 목록, 화면마다 보이는 요소, 카드 만들기, 상태 바꾸기(할 일 / 진행 중 / 완료), 고치기, 지우기(지우기 확인 포함)를 할 때의 동작이 보인다. README.md 표에 SCREEN-SPEC.md가 있다. |
-| P-07 | DATA-MODEL.md 작성 | 예정 | DATA-MODEL.md를 열면 카드가 가진 항목과 상태 값 3개(할 일 / 진행 중 / 완료)가 보이고, 저장 위치는 사람이 정한 것만 적혀 있거나 "아직 정하지 않음"으로 적혀 있다. README.md 표에 DATA-MODEL.md가 있다. |
+| P-07 | DATA-MODEL.md 작성 | 완료 | DATA-MODEL.md를 열면 카드가 가진 항목과 상태 값 3개(할 일 / 진행 중 / 완료)가 보이고, 저장 위치는 사람이 정한 것만 적혀 있거나 "아직 정하지 않음"으로 적혀 있다. README.md 표에 DATA-MODEL.md가 있다. |
 | P-08 | API-SPEC.md 작성 | 예정 | API-SPEC.md를 열면 카드 만들기·상태 바꾸기·고치기·지우기에 필요한 요청과 응답이 보인다. README.md 표에 API-SPEC.md가 있다. |
 | P-09 | TEST-PLAN.md 작성 | 예정 | TEST-PLAN.md를 열면 기능마다 확인 방법과 기대 결과가 보인다. README.md 표에 TEST-PLAN.md가 있다. |
 
@@ -47,8 +47,9 @@
 | P-04 | PRD.md를 열어 "요구사항 후보와 검토" 표(R-001~R-016)를 확인함 | 확인함 |
 | P-05 | ARCHITECTURE.md를 열어 "승인 확인" 항목을 모두 승인하고, README.md 표에 ARCHITECTURE.md가 있음을 확인함 | 확인함 |
 | P-06 | SCREEN-SPEC.md를 열어 "승인 확인" 항목을 모두 승인하고, README.md 표에 SCREEN-SPEC.md가 있음을 확인함 | 확인함 |
+| P-07 | DATA-MODEL.md를 열어 "승인 확인" 항목을 모두 승인하고, README.md 표에 DATA-MODEL.md가 있음을 확인함 | 확인함 |
 
-P-07 ~ P-09는 아직 확인하지 않았다.
+P-08 ~ P-09는 아직 확인하지 않았다.
 
 ## 남은 문제와 다음 행동
 
@@ -61,6 +62,6 @@ P-07 ~ P-09는 아직 확인하지 않았다.
 | D-001, D-002, D-003의 "적용 범위"가 "아직 정하지 않음"임. | 사람이 채울지 정한다. |
 | 기능을 확인하는 방법(직접 해 보기, 자동 테스트)을 아직 정하지 않음. | P-09(TEST-PLAN.md) 작성 때 사람이 정한다. |
 | DESIGN.md(화면이 어떻게 보이는지)를 작업 목록에 넣을지 아직 정하지 않음. AGENTS.md "문서 역할"에는 있지만 "참고 문서" 표와 작업 목록에는 없다. | 사람이 작업 목록에 넣을지 정한다. 정할 때는 아직 정하지 않음. |
-| PRD.md R-011(카드를 만든 시각을 내부에 기록)은 저장할 정보라 DATA-MODEL.md에 둘 내용일 수 있음. | P-07(DATA-MODEL.md) 작성 때 옮길지 사람이 정한다. |
+| PRD.md R-011(카드를 만든 시각을 내부에 기록)은 저장할 정보라 DATA-MODEL.md에 둘 내용일 수 있음. | P-07 작성 때 사람이 AI 제안대로 정해 DATA-MODEL.md M-01에 적음. R-011은 PRD.md에 남김. |
 | PRD.md R-012(상태를 바꾼 카드의 순서)는 목록 순서라 API-SPEC.md에 둘 내용일 수 있음. | P-08(API-SPEC.md) 작성 때 옮길지 사람이 정한다. |
 | PRD.md R-013(제목이 비었을 때 안내), R-016(빈 화면 안내)과 PRD.md "아직 정하지 않음"의 화면 배치, 상태를 바꾸는 방법, 안내 문구, 카드를 만든 시각을 화면에 보여 줄지는 SCREEN-SPEC.md에 둘 내용이거나 둘 수 있는 내용임. | P-06 작성 때 사람이 AI 제안대로 정해 SCREEN-SPEC.md "이번에 정한 화면 규칙"(S-01~S-16)에 적음. R-013, R-016은 PRD.md에 남기고 문구만 SCREEN-SPEC.md에 적음. |
