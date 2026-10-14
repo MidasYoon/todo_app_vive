@@ -44,3 +44,18 @@
 - 적용 범위: 아직 정하지 않음
 - 관련 기준 문서: SCREEN-SPEC.md
 - 유효 상태: 유효
+
+## D-005. 개발 도구와 실행 방법
+
+- 결정 내용:
+  - Python 3.12, 서버 실행 도구는 uvicorn, SQLite에는 Python에 들어 있는 `sqlite3`로 닿는다.
+  - Node.js 22 (LTS), React를 만들고 실행하는 도구는 Vite, 화면 언어는 JavaScript.
+  - 화면과 서버를 따로 띄운다. 화면은 Vite(5173번 포트), 서버는 uvicorn(8000번 포트)이고, Vite가 `/api` 요청을 서버로 넘긴다.
+  - 폴더는 `backend/`(서버), `frontend/`(화면)로 나눈다.
+  - 실행 명령: 서버는 `backend`에서 `uvicorn app.main:app --reload --port 8000`, 화면은 `frontend`에서 `npm run dev`.
+  - 버전은 `requirements.txt`와 `package-lock.json`에 고정한다.
+  - 인터넷에 올리는 방법(호스팅)은 아직 정하지 않음.
+- 결정 이유: AI 제안을 사람이 받아들였다. 내 컴퓨터에 설치된 버전(Python 3.12.10, Node.js v22.23.3)에 맞췄다. 화면을 따로 띄우면 고친 것이 바로 보이고, `/api`를 넘겨 주어 교차 출처(CORS) 설정이 필요 없다.
+- 적용 범위: 아직 정하지 않음
+- 관련 기준 문서: AGENTS.md, ARCHITECTURE.md, README.md
+- 유효 상태: 유효
