@@ -4,7 +4,7 @@
 
 ## 현재 상태
 
-만드는 중입니다. 화면 틀(`frontend/`)과 서버 틀(`backend/`)이 있습니다. 화면을 열면 앱 이름과 상태 칸 3개(할 일 / 진행 중 / 완료)만 보이고, 카드 기능은 아직 없습니다. 서버는 카드 목록 요청(`GET /api/cards`)만 받고, 화면과는 아직 연결되지 않았습니다.
+만드는 중입니다. 화면 틀(`frontend/`)과 서버 틀(`backend/`)이 있습니다. 화면을 열면 서버에서 카드 목록을 받아 와 앱 이름과 상태 칸 3개(할 일 / 진행 중 / 완료), 빈 화면 안내가 보입니다. 서버가 꺼져 있으면 불러오지 못했다고 알립니다. 카드 만들기·상태 바꾸기·고치기·지우기는 아직 없습니다.
 
 - 문서: README.md, AGENTS.md, DECISIONS.md, PLAN.md, PRD.md, ARCHITECTURE.md, SCREEN-SPEC.md, DATA-MODEL.md, API-SPEC.md
 - 진행 상황: PLAN.md "작업 목록"에 적었습니다.

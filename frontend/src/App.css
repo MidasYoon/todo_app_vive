@@ -13,3 +13,8 @@
   border: 1px solid;
   padding: 8px;
 }
+
+.notice,
+.error {
+  margin: 16px 0;
+}
