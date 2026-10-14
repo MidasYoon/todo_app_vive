@@ -44,7 +44,7 @@
 
 서버와 화면을 터미널 두 개에서 따로 켭니다.
 
-1. 서버: `backend` 폴더에서 가상 환경을 켜고(PowerShell: `.venv\Scripts\Activate.ps1`) `uvicorn app.main:app --reload --port 8000`. 처음 켜면 카드 저장 파일 `backend/data/cards.db`가 생깁니다.
+1. 서버: `backend` 폴더에서 `.venv\Scripts\python -m uvicorn app.main:app --reload --port 8000`. 가상 환경의 Python으로 D-005의 서버 명령을 실행하는 것이라, 가상 환경을 따로 켤(`Activate.ps1`) 필요가 없습니다. 처음 켜면 카드 저장 파일 `backend/data/cards.db`가 생깁니다.
 2. 화면: `frontend` 폴더에서 `npm run dev`
 3. 브라우저에서 http://localhost:5173 을 엽니다.
 
