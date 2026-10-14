@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { createCard, fetchCards, updateCard } from './api.js'
+import { useEffect, useRef, useState } from 'react'
+import { createCard, deleteCard, fetchCards, updateCard } from './api.js'
 import { checkCardInput } from './rules.js'
 import './App.css'
 
@@ -24,7 +24,7 @@ const MESSAGES = {
   notFound: '이미 지워진 카드입니다. 목록을 다시 불러왔습니다.', // S-13, S-17
 }
 
-// 저장(만들기·상태 바꾸기)에 실패했을 때 오류 안내 자리에 보이는 문구들.
+// 저장(만들기·상태 바꾸기·고치기·지우기)에 실패했을 때 오류 안내 자리에 보이는 문구들.
 // 다음 저장이 성공하면 지웁니다. 목록을 불러오지 못했다는 안내는 남깁니다.
 const SAVE_FAILURE_MESSAGES = [
   MESSAGES.saveConnection,
@@ -108,8 +108,80 @@ function CreateCardForm({ onCreated, onSaveFailed }) {
   )
 }
 
-// 카드 하나 (SCREEN-SPEC.md "카드 하나"). 고치기·지우기는 P-17에서 붙입니다.
-function Card({ card, busy, onChangeStatus }) {
+// 카드를 고치는 중 (SCREEN-SPEC.md "카드를 고치는 중"). 카드 자리에서 바로 고칩니다 (S-09).
+// onSave는 서버 결과를 돌려줍니다. 입력 오류만 여기서 보여 주고, 그 밖의 실패는 App이 안내합니다.
+function EditCardForm({ card, onSave, onClose }) {
+  const [title, setTitle] = useState(card.title)
+  const [description, setDescription] = useState(card.description)
+  const [messages, setMessages] = useState([])
+  const [saving, setSaving] = useState(false)
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    const input = checkCardInput(title, description)
+    if (input.errors.length > 0) {
+      setMessages(inputMessages(input.errors))
+      return
+    }
+
+    // 바뀐 칸만 보냅니다 (A-01). 바뀐 것이 없으면 보내지 않고 닫습니다 (S-24).
+    const fields = {}
+    if (input.title !== card.title) fields.title = input.title
+    if (input.description !== card.description) fields.description = input.description
+    if (Object.keys(fields).length === 0) {
+      onClose()
+      return
+    }
+
+    setMessages([])
+    setSaving(true) // S-22
+    const result = await onSave(card, fields)
+    setSaving(false)
+
+    if (result.ok) {
+      onClose()
+    } else if (result.reason === 'invalid') {
+      setMessages(inputMessages(result.errors)) // S-20
+    }
+    // 그 밖의 실패는 고치는 중인 채로 남습니다 (SCREEN-SPEC.md "카드 고치기" 6).
+  }
+
+  return (
+    <form className="card edit-form" onSubmit={handleSubmit} noValidate>
+      <label>
+        제목
+        <input type="text" value={title} onChange={(event) => setTitle(event.target.value)} />
+      </label>
+      <label>
+        설명
+        <textarea value={description} onChange={(event) => setDescription(event.target.value)} />
+      </label>
+      <div className="card-buttons">
+        <button type="submit" disabled={saving}>
+          저장
+        </button>
+        {/* 고친 내용을 버리고 원래 카드로 돌아갑니다 (S-06) */}
+        <button type="button" disabled={saving} onClick={onClose}>
+          취소
+        </button>
+      </div>
+      {messages.map((message) => (
+        <p key={message} className="input-message" role="alert">
+          {message}
+        </p>
+      ))}
+    </form>
+  )
+}
+
+// 카드 하나 (SCREEN-SPEC.md "카드 하나"). 카드마다 따로 고치는 중이 될 수 있습니다 (S-23).
+function Card({ card, busy, onChangeStatus, onSave, onDelete }) {
+  const [editing, setEditing] = useState(false)
+
+  if (editing) {
+    return <EditCardForm card={card} onSave={onSave} onClose={() => setEditing(false)} />
+  }
+
   return (
     <article className="card">
       <h3>{card.title}</h3>
@@ -127,7 +199,44 @@ function Card({ card, busy, onChangeStatus }) {
           </button>
         ))}
       </div>
+      <div className="card-buttons">
+        <button type="button" onClick={() => setEditing(true)}>
+          고치기
+        </button>
+        <button type="button" onClick={() => onDelete(card)}>
+          지우기
+        </button>
+      </div>
     </article>
+  )
+}
+
+// 지우기 확인 창 (SCREEN-SPEC.md "지우기 확인 창"). 브라우저 기본 확인 창이 아닌 앱 안 창입니다 (S-15).
+function DeleteDialog({ deleting, onYes, onNo }) {
+  const dialogRef = useRef(null)
+
+  useEffect(() => {
+    if (!dialogRef.current.open) dialogRef.current.showModal()
+  }, [])
+
+  function handleCancel(event) {
+    // Esc는 [아니요]와 같습니다 (S-25). 지우는 동안에는 닫지 않습니다 (S-22).
+    event.preventDefault()
+    if (!deleting) onNo()
+  }
+
+  return (
+    <dialog ref={dialogRef} className="delete-dialog" onCancel={handleCancel}>
+      <p>정말 지울까요?</p>
+      <div className="card-buttons">
+        <button type="button" disabled={deleting} onClick={onYes}>
+          예
+        </button>
+        <button type="button" disabled={deleting} onClick={onNo}>
+          아니요
+        </button>
+      </div>
+    </dialog>
   )
 }
 
@@ -142,6 +251,9 @@ function App() {
   const [errorMessage, setErrorMessage] = useState(null)
   // 서버에 상태 바꾸기를 보내는 중인 카드 번호들 (S-22)
   const [busyIds, setBusyIds] = useState([])
+  // 지우기 확인 창을 띄운 카드, 지우는 중인지 (S-22)
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     let ignore = false
@@ -201,6 +313,37 @@ function App() {
     }
   }
 
+  // 고친 내용 저장. 결과를 EditCardForm에 돌려줍니다.
+  async function handleSave(card, fields) {
+    const result = await updateCard(card.id, fields)
+    if (result.ok) {
+      setCards((current) => current.map((item) => (item.id === card.id ? result.card : item)))
+      clearSaveFailure()
+    } else if (result.reason === 'not_found') {
+      await reloadAfterNotFound()
+    } else if (result.reason !== 'invalid') {
+      setErrorMessage(saveFailureMessage(result.reason))
+    }
+    return result
+  }
+
+  async function handleDeleteYes() {
+    const card = deleteTarget
+    setDeleting(true) // S-22
+    const result = await deleteCard(card.id)
+    setDeleting(false)
+    setDeleteTarget(null) // 성공해도 실패해도 창을 닫습니다 (S-26)
+
+    if (result.ok) {
+      setCards((current) => current.filter((item) => item.id !== card.id))
+      clearSaveFailure()
+    } else if (result.reason === 'not_found') {
+      await reloadAfterNotFound()
+    } else {
+      setErrorMessage(saveFailureMessage(result.reason)) // 카드는 그대로 남습니다
+    }
+  }
+
   return (
     <main className="app">
       <h1>할 일 카드</h1>
@@ -226,6 +369,8 @@ function App() {
                       card={card}
                       busy={busyIds.includes(card.id)}
                       onChangeStatus={handleChangeStatus}
+                      onSave={handleSave}
+                      onDelete={setDeleteTarget}
                     />
                   ))}
               </section>
@@ -239,6 +384,14 @@ function App() {
         <p className="error" role="alert">
           {errorMessage}
         </p>
+      )}
+
+      {deleteTarget && (
+        <DeleteDialog
+          deleting={deleting}
+          onYes={handleDeleteYes}
+          onNo={() => setDeleteTarget(null)} // 서버에 보내지 않습니다 (S-07)
+        />
       )}
     </main>
   )

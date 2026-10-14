@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from .db import connect, init_db
 from .rules import check_card_patch, check_new_card
@@ -113,3 +113,20 @@ async def update_card(card_id: str, request: Request):
     finally:
         conn.close()
     return dict(row)
+
+
+@app.delete("/api/cards/{card_id}")
+def delete_card(card_id: str):
+    """지우기 (API-SPEC.md "지우기"). 지움 표시를 두지 않고 저장소에서 없앱니다."""
+    if not re.fullmatch(r"[0-9]+", card_id):
+        return error_response(404, NOT_FOUND)  # A-09
+
+    conn = connect()
+    try:
+        with conn:
+            cursor = conn.execute("DELETE FROM cards WHERE id = ?", (int(card_id),))
+    finally:
+        conn.close()
+    if cursor.rowcount == 0:
+        return error_response(404, NOT_FOUND)
+    return Response(status_code=204)  # A-02

@@ -51,6 +51,17 @@
   white-space: pre-wrap;
 }
 
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edit-form label {
+  display: flex;
+  flex-direction: column;
+}
+
 .card-buttons {
   display: flex;
   flex-wrap: wrap;

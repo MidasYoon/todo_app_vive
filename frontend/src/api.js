@@ -77,6 +77,22 @@ export async function createCard(title, description) {
   return failure(response)
 }
 
+// 지우기: DELETE /api/cards/{id}
+// 성공하면 { ok: true }
+export async function deleteCard(id) {
+  let response
+  try {
+    response = await fetch(`/api/cards/${id}`, { method: 'DELETE' })
+  } catch {
+    return { ok: false, reason: 'connection' }
+  }
+
+  if (response.status === 204) {
+    return { ok: true }
+  }
+  return failure(response)
+}
+
 // 상태 바꾸기, 고치기: PATCH /api/cards/{id}. 바꿀 칸만 보냅니다 (A-01).
 // 성공하면 { ok: true, card }
 export async function updateCard(id, fields) {
