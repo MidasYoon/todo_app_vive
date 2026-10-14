@@ -4,7 +4,10 @@
 
 ## 현재 상태
 
-만들기 전입니다. 아직 앱 코드는 없고 README.md, AGENTS.md, DECISIONS.md, PLAN.md, PRD.md, ARCHITECTURE.md, SCREEN-SPEC.md, DATA-MODEL.md, API-SPEC.md만 있습니다.
+만드는 중입니다. 화면 틀(`frontend/`)만 있습니다. 화면을 열면 앱 이름과 상태 칸 3개(할 일 / 진행 중 / 완료)만 보이고, 카드 기능은 아직 없습니다. 서버(`backend/`)는 아직 없습니다.
+
+- 문서: README.md, AGENTS.md, DECISIONS.md, PLAN.md, PRD.md, ARCHITECTURE.md, SCREEN-SPEC.md, DATA-MODEL.md, API-SPEC.md
+- 진행 상황: PLAN.md "작업 목록"에 적었습니다.
 
 - 만들 기능과 넣지 않는 기능: PRD.md에 적었습니다.
 
@@ -30,17 +33,20 @@
 
 ## 실행 방법
 
-아직 앱 코드가 없어서 아래 명령은 지금은 동작하지 않습니다. 서버는 P-12, 화면은 P-11을 마치면 동작합니다. (D-005)
+화면 명령은 지금 동작합니다. 서버 명령은 아직 서버 코드가 없어서 동작하지 않고, P-12를 마치면 동작합니다. (D-005)
 
 필요한 것: Python 3.12, Node.js 22 (LTS)
+
+처음 한 번만 설치합니다.
+
+- 화면: `frontend` 폴더에서 `npm install`
+- 서버: P-12에서 정해지면 이 칸에 적습니다.
 
 서버와 화면을 터미널 두 개에서 따로 켭니다.
 
 1. 서버: `backend` 폴더에서 `uvicorn app.main:app --reload --port 8000`
 2. 화면: `frontend` 폴더에서 `npm run dev`
-3. 브라우저에서 화면 주소(5173번 포트)를 엽니다.
-
-처음 설치하는 방법(가상 환경, `requirements.txt`, `npm install`)은 P-11, P-12에서 정해지면 이 칸에 적습니다.
+3. 브라우저에서 http://localhost:5173 을 엽니다.
 
 ## 확인과 기록
 

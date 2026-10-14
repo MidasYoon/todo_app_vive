@@ -1,0 +1,15 @@
+/* 칸을 나란히 놓는 최소 배치만 둡니다. 색·글자·여백 규칙은 아직 정하지 않음 (DESIGN.md). */
+.app {
+  padding: 16px;
+}
+
+.columns {
+  display: flex;
+  gap: 16px;
+}
+
+.column {
+  flex: 1;
+  border: 1px solid;
+  padding: 8px;
+}
