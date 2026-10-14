@@ -1,4 +1,5 @@
 import json
+import re
 import sqlite3
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -7,7 +8,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from .db import connect, init_db
-from .rules import check_new_card
+from .rules import check_card_patch, check_new_card
 
 CARD_COLUMNS = "id, title, description, status"
 
@@ -72,3 +73,43 @@ async def create_card(request: Request):
     finally:
         conn.close()
     return JSONResponse(status_code=201, content=dict(row))
+
+
+NOT_FOUND = [{"field": None, "kind": "not_found"}]
+
+
+@app.patch("/api/cards/{card_id}")
+async def update_card(card_id: str, request: Request):
+    """상태 바꾸기, 고치기 (API-SPEC.md "상태 바꾸기, 고치기")
+
+    카드가 있는지 먼저 보고, 그다음 보낸 칸을 검사합니다.
+    """
+    if not re.fullmatch(r"[0-9]+", card_id):
+        return error_response(404, NOT_FOUND)  # A-09
+    card_id = int(card_id)
+
+    conn = connect()
+    try:
+        exists = conn.execute("SELECT 1 FROM cards WHERE id = ?", (card_id,)).fetchone()
+        if not exists:
+            return error_response(404, NOT_FOUND)
+
+        try:
+            body = json.loads(await request.body())
+        except ValueError:
+            return error_response(422, [{"field": None, "kind": "invalid_value"}])  # A-08
+
+        values, errors = check_card_patch(body)
+        if errors:
+            return error_response(422, errors)
+
+        # 보낸 칸만 바꿉니다. created_at은 바꾸지 않습니다. 칸 이름은 check_card_patch가 정한 것만 들어옵니다.
+        assignments = ", ".join(f"{field} = ?" for field in values)
+        with conn:
+            conn.execute(
+                f"UPDATE cards SET {assignments} WHERE id = ?", (*values.values(), card_id)
+            )
+        row = conn.execute(f"SELECT {CARD_COLUMNS} FROM cards WHERE id = ?", (card_id,)).fetchone()
+    finally:
+        conn.close()
+    return dict(row)

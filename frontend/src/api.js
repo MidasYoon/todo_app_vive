@@ -15,7 +15,7 @@ async function readErrors(response) {
 }
 
 // 실패한 응답을 { ok: false, reason, errors }로 바꿉니다.
-// reason: 'invalid'(입력 오류) | 'storage'(저장소 오류) | 'connection'(서버에 닿지 못함)
+// reason: 'invalid'(입력 오류) | 'not_found'(없는 카드) | 'storage'(저장소 오류) | 'connection'(서버에 닿지 못함)
 async function failure(response) {
   const errors = await readErrors(response)
   if (!errors) {
@@ -23,6 +23,9 @@ async function failure(response) {
   }
   if (errors.some((error) => error.kind === 'storage_error')) {
     return { ok: false, reason: 'storage' }
+  }
+  if (response.status === 404 && errors.some((error) => error.kind === 'not_found')) {
+    return { ok: false, reason: 'not_found' }
   }
   if (response.status === 422) {
     return { ok: false, reason: 'invalid', errors }
@@ -65,6 +68,30 @@ export async function createCard(title, description) {
   }
 
   if (response.status === 201) {
+    try {
+      return { ok: true, card: await response.json() }
+    } catch {
+      return { ok: false, reason: 'connection' }
+    }
+  }
+  return failure(response)
+}
+
+// 상태 바꾸기, 고치기: PATCH /api/cards/{id}. 바꿀 칸만 보냅니다 (A-01).
+// 성공하면 { ok: true, card }
+export async function updateCard(id, fields) {
+  let response
+  try {
+    response = await fetch(`/api/cards/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields),
+    })
+  } catch {
+    return { ok: false, reason: 'connection' }
+  }
+
+  if (response.status === 200) {
     try {
       return { ok: true, card: await response.json() }
     } catch {

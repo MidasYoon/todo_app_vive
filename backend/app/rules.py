@@ -3,6 +3,7 @@
 
 TITLE_MAX = 100  # M-04
 DESCRIPTION_MAX = 1000  # M-04
+STATUSES = ("todo", "doing", "done")  # M-06
 
 
 def _error(field, kind):
@@ -28,6 +29,42 @@ def check_description(value):
     if len(value) > DESCRIPTION_MAX:  # M-13
         return None, _error("description", "too_long")
     return value, None
+
+
+def check_status(value):
+    """상태 값을 검사합니다 (M-06)."""
+    if not isinstance(value, str):
+        return None, _error("status", "invalid_value")  # A-08
+    if value not in STATUSES:
+        return None, _error("status", "invalid_status")
+    return value, None
+
+
+def check_card_patch(body):
+    """상태 바꾸기·고치기 요청을 검사합니다. (바꿀 값, 오류 목록)
+
+    보낸 칸만 검사하고 돌려줍니다 (A-01). 모르는 칸은 무시하고(A-06),
+    남는 칸이 없으면 empty_request로 거절합니다 (A-10).
+    """
+    if not isinstance(body, dict):
+        return None, [_error(None, "invalid_value")]  # A-08
+
+    checks = {"title": check_title, "description": check_description, "status": check_status}
+    values = {}
+    errors = []
+    for field, check in checks.items():
+        if field in body:
+            value, error = check(body[field])
+            if error:
+                errors.append(error)
+            else:
+                values[field] = value
+
+    if errors:
+        return None, errors
+    if not values:
+        return None, [_error(None, "empty_request")]
+    return values, []
 
 
 def check_new_card(body):

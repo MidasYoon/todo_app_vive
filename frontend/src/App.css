@@ -51,6 +51,13 @@
   white-space: pre-wrap;
 }
 
+.card-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
 .notice,
 .error {
   margin: 16px 0;
