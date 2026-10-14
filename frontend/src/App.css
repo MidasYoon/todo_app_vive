@@ -1,6 +1,26 @@
-/* 칸을 나란히 놓는 최소 배치만 둡니다. 색·글자·여백 규칙은 아직 정하지 않음 (DESIGN.md). */
+/* 구별할 수 있을 만큼의 최소 배치만 둡니다. 색·글자·여백 규칙은 아직 정하지 않음 (DESIGN.md). */
 .app {
   padding: 16px;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 480px;
+}
+
+.create-form label {
+  display: flex;
+  flex-direction: column;
+}
+
+.create-form button {
+  align-self: flex-start;
+}
+
+.input-message {
+  margin: 0;
 }
 
 .columns {
@@ -10,8 +30,25 @@
 
 .column {
   flex: 1;
+  min-width: 0;
   border: 1px solid;
   padding: 8px;
+}
+
+.card {
+  border: 1px solid;
+  padding: 8px;
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+
+.card h3 {
+  margin: 0;
+}
+
+.card-description {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
 }
 
 .notice,
