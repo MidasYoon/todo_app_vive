@@ -4,7 +4,7 @@
 
 ## 현재 상태
 
-만드는 중입니다. 화면 틀(`frontend/`)만 있습니다. 화면을 열면 앱 이름과 상태 칸 3개(할 일 / 진행 중 / 완료)만 보이고, 카드 기능은 아직 없습니다. 서버(`backend/`)는 아직 없습니다.
+만드는 중입니다. 화면 틀(`frontend/`)과 서버 틀(`backend/`)이 있습니다. 화면을 열면 앱 이름과 상태 칸 3개(할 일 / 진행 중 / 완료)만 보이고, 카드 기능은 아직 없습니다. 서버는 카드 목록 요청(`GET /api/cards`)만 받고, 화면과는 아직 연결되지 않았습니다.
 
 - 문서: README.md, AGENTS.md, DECISIONS.md, PLAN.md, PRD.md, ARCHITECTURE.md, SCREEN-SPEC.md, DATA-MODEL.md, API-SPEC.md
 - 진행 상황: PLAN.md "작업 목록"에 적었습니다.
@@ -33,18 +33,18 @@
 
 ## 실행 방법
 
-화면 명령은 지금 동작합니다. 서버 명령은 아직 서버 코드가 없어서 동작하지 않고, P-12를 마치면 동작합니다. (D-005)
+(D-005)
 
 필요한 것: Python 3.12, Node.js 22 (LTS)
 
 처음 한 번만 설치합니다.
 
 - 화면: `frontend` 폴더에서 `npm install`
-- 서버: P-12에서 정해지면 이 칸에 적습니다.
+- 서버: `backend` 폴더에서 `python -m venv .venv`로 가상 환경을 만든 뒤, `.venv\Scripts\python -m pip install -r requirements.txt`
 
 서버와 화면을 터미널 두 개에서 따로 켭니다.
 
-1. 서버: `backend` 폴더에서 `uvicorn app.main:app --reload --port 8000`
+1. 서버: `backend` 폴더에서 가상 환경을 켜고(PowerShell: `.venv\Scripts\Activate.ps1`) `uvicorn app.main:app --reload --port 8000`. 처음 켜면 카드 저장 파일 `backend/data/cards.db`가 생깁니다.
 2. 화면: `frontend` 폴더에서 `npm run dev`
 3. 브라우저에서 http://localhost:5173 을 엽니다.
 
