@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createCard, deleteCard, fetchCards, updateCard } from './api.js'
 import { checkCardInput } from './rules.js'
+import { applyTheme, initialTheme, saveTheme } from './theme.js'
 import './App.css'
 
 // 상태 칸 3개 (SCREEN-SPEC.md S-01, 상태 값은 DATA-MODEL.md M-06)
@@ -96,14 +97,18 @@ function CreateCardForm({ onCreated, onSaveFailed }) {
         설명
         <textarea value={description} onChange={(event) => setDescription(event.target.value)} />
       </label>
-      <button type="submit" disabled={sending}>
-        만들기
-      </button>
-      {messages.map((message) => (
-        <p key={message} className="input-message" role="alert">
-          {message}
-        </p>
-      ))}
+      <div className="create-foot">
+        <div className="input-messages">
+          {messages.map((message) => (
+            <p key={message} className="input-message" role="alert">
+              {message}
+            </p>
+          ))}
+        </div>
+        <button type="submit" className="btn-primary" disabled={sending}>
+          만들기
+        </button>
+      </div>
     </form>
   )
 }
@@ -156,20 +161,20 @@ function EditCardForm({ card, onSave, onClose }) {
         설명
         <textarea value={description} onChange={(event) => setDescription(event.target.value)} />
       </label>
-      <div className="card-buttons">
-        <button type="submit" disabled={saving}>
-          저장
-        </button>
-        {/* 고친 내용을 버리고 원래 카드로 돌아갑니다 (S-06) */}
-        <button type="button" disabled={saving} onClick={onClose}>
-          취소
-        </button>
-      </div>
       {messages.map((message) => (
         <p key={message} className="input-message" role="alert">
           {message}
         </p>
       ))}
+      <div className="edit-buttons">
+        {/* 고친 내용을 버리고 원래 카드로 돌아갑니다 (S-06) */}
+        <button type="button" className="btn" disabled={saving} onClick={onClose}>
+          취소
+        </button>
+        <button type="submit" className="btn-primary" disabled={saving}>
+          저장
+        </button>
+      </div>
     </form>
   )
 }
@@ -187,25 +192,33 @@ function Card({ card, busy, onChangeStatus, onSave, onDelete }) {
       <h3>{card.title}</h3>
       {card.description && <p className="card-description">{card.description}</p>}
       <div className="card-buttons">
-        {/* 상태 버튼 3개. 지금 상태 버튼과 보내는 동안의 버튼은 누를 수 없습니다 (S-02, S-22). */}
-        {STATUSES.map((status) => (
-          <button
-            key={status.value}
-            type="button"
-            disabled={busy || card.status === status.value}
-            onClick={() => onChangeStatus(card, status.value)}
-          >
-            {status.label}
+        <div className="button-group">
+          {/* 상태 버튼 3개. 지금 상태 버튼과 보내는 동안의 버튼은 누를 수 없습니다 (S-02, S-22).
+              지금 상태 버튼은 회색으로 채우고, 보내는 동안에는 흐리게 보입니다 (DS-09, DS-10). */}
+          {STATUSES.map((status) => {
+            const current = card.status === status.value
+            return (
+              <button
+                key={status.value}
+                type="button"
+                className={current ? 'btn btn-current' : 'btn'}
+                data-busy={busy || undefined}
+                disabled={busy || current}
+                onClick={() => onChangeStatus(card, status.value)}
+              >
+                {status.label}
+              </button>
+            )
+          })}
+        </div>
+        <div className="button-group">
+          <button type="button" className="btn" onClick={() => setEditing(true)}>
+            고치기
           </button>
-        ))}
-      </div>
-      <div className="card-buttons">
-        <button type="button" onClick={() => setEditing(true)}>
-          고치기
-        </button>
-        <button type="button" onClick={() => onDelete(card)}>
-          지우기
-        </button>
+          <button type="button" className="btn-danger" onClick={() => onDelete(card)}>
+            지우기
+          </button>
+        </div>
       </div>
     </article>
   )
@@ -228,15 +241,40 @@ function DeleteDialog({ deleting, onYes, onNo }) {
   return (
     <dialog ref={dialogRef} className="delete-dialog" onCancel={handleCancel}>
       <p>정말 지울까요?</p>
-      <div className="card-buttons">
-        <button type="button" disabled={deleting} onClick={onYes}>
-          예
-        </button>
-        <button type="button" disabled={deleting} onClick={onNo}>
+      <div className="dialog-buttons">
+        <button type="button" className="btn" disabled={deleting} onClick={onNo}>
           아니요
+        </button>
+        <button type="button" className="btn-danger-fill" disabled={deleting} onClick={onYes}>
+          예
         </button>
       </div>
     </dialog>
+  )
+}
+
+// 화면 모드 스위치 (SCREEN-SPEC.md S-28). 서버에는 아무것도 보내지 않습니다.
+function ThemeSwitch() {
+  const [theme, setTheme] = useState(initialTheme)
+
+  function handleClick() {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    applyTheme(next)
+    saveTheme(next)
+    setTheme(next)
+  }
+
+  return (
+    <button
+      type="button"
+      className="theme-switch"
+      role="switch"
+      aria-checked={theme === 'dark'}
+      onClick={handleClick}
+    >
+      어두운 화면
+      <span className="switch-track" aria-hidden="true" />
+    </button>
   )
 }
 
@@ -346,9 +384,19 @@ function App() {
 
   return (
     <main className="app">
-      <h1>할 일 카드</h1>
+      <header className="app-header">
+        <h1>할 일 카드</h1>
+        <ThemeSwitch />
+      </header>
 
       <CreateCardForm onCreated={handleCreated} onSaveFailed={setErrorMessage} />
+
+      {/* 오류 안내 자리 (SCREEN-SPEC.md "카드 화면" 3). 상태 칸 위에 둡니다 (DESIGN.md "배치"). */}
+      {errorMessage && (
+        <p className="error" role="alert">
+          {errorMessage}
+        </p>
+      )}
 
       {loadState === 'loading' ? (
         <p className="notice">{MESSAGES.loading}</p>
@@ -358,32 +406,35 @@ function App() {
             <p className="notice">{MESSAGES.empty}</p>
           )}
           <div className="columns">
-            {STATUSES.map((status) => (
-              <section key={status.value} className="column">
-                <h2>{status.label}</h2>
-                {cards
-                  .filter((card) => card.status === status.value)
-                  .map((card) => (
-                    <Card
-                      key={card.id}
-                      card={card}
-                      busy={busyIds.includes(card.id)}
-                      onChangeStatus={handleChangeStatus}
-                      onSave={handleSave}
-                      onDelete={setDeleteTarget}
-                    />
-                  ))}
-              </section>
-            ))}
+            {STATUSES.map((status) => {
+              const columnCards = cards.filter((card) => card.status === status.value)
+              return (
+                <section key={status.value} className={`column column-${status.value}`}>
+                  <div className="column-head">
+                    <span className="status-dot" aria-hidden="true" />
+                    <h2>{status.label}</h2>
+                    {/* 칸 머리 카드 수. 목록을 불러오지 못했을 때는 보여 주지 않습니다 (S-27). */}
+                    {loadState === 'loaded' && (
+                      <span className="column-count">{columnCards.length}</span>
+                    )}
+                  </div>
+                  <div className="card-list">
+                    {columnCards.map((card) => (
+                      <Card
+                        key={card.id}
+                        card={card}
+                        busy={busyIds.includes(card.id)}
+                        onChangeStatus={handleChangeStatus}
+                        onSave={handleSave}
+                        onDelete={setDeleteTarget}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )
+            })}
           </div>
         </>
-      )}
-
-      {/* 오류 안내 자리 (SCREEN-SPEC.md "카드 화면" 4) */}
-      {errorMessage && (
-        <p className="error" role="alert">
-          {errorMessage}
-        </p>
       )}
 
       {deleteTarget && (

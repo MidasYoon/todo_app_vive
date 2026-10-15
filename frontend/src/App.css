@@ -1,75 +1,434 @@
-/* 구별할 수 있을 만큼의 최소 배치만 둡니다. 색·글자·여백 규칙은 아직 정하지 않음 (DESIGN.md). */
-.app {
-  padding: 16px;
+/* 화면 생김새는 DESIGN.md를 따릅니다. 색은 아래 변수만 씁니다 (DS-01). */
+
+/* 색: 밝은 화면 (DESIGN.md "색") */
+:root {
+  --page: #ffffff;
+  --panel: #f3f4f6;
+  --surface: #ffffff;
+  --border: #d9dde3;
+  --text: #1f2328;
+  --muted: #5b6470;
+  --accent: #2563eb;
+  --accent-dark: #1d4ed8;
+  --focus: #2563eb;
+  --danger: #c62828;
+  --danger-fill: #c62828;
+  --danger-soft: #fdecec;
+  --current-bg: #e5e7eb;
+  --current-text: #374151;
+  --switch-off: #5b6470;
+  --card-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+  --dialog-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+  --status-todo: #4b5563;
+  --status-doing: #1d4ed8;
+  --status-done: #15803d;
+  color-scheme: light;
 }
 
+/* 색: 어두운 화면 (DESIGN.md "색", DS-13) */
+:root[data-theme='dark'] {
+  --page: #16181c;
+  --panel: #1f2227;
+  --surface: #2a2e35;
+  --border: #3d434c;
+  --text: #e6e8eb;
+  --muted: #a3abb5;
+  --focus: #60a5fa;
+  --danger: #f87171;
+  --danger-soft: #3a1f22;
+  --current-bg: #3d434c;
+  --current-text: #e6e8eb;
+  --switch-off: #a3abb5;
+  --card-shadow: 0 1px 2px rgb(0 0 0 / 30%);
+  --dialog-shadow: 0 8px 24px rgb(0 0 0 / 50%);
+  --status-todo: #9ca3af;
+  --status-doing: #60a5fa;
+  --status-done: #4ade80;
+  color-scheme: dark;
+}
+
+/* 화면 폭과 배치 (DS-06) */
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* 입력칸 (DESIGN.md "모양") */
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+input {
+  height: 36px;
+  padding: 0 12px;
+}
+
+textarea {
+  min-height: calc(3 * 1.5em + 16px);
+  padding: 8px 12px;
+  resize: vertical;
+}
+
+/* 키보드 포커스 (DS-12) */
+input:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+/* 버튼 (DS-08, DESIGN.md "버튼") */
+button {
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s; /* DS-14 */
+}
+
+.btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--panel);
+}
+
+.btn-primary {
+  border: 0;
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.btn-danger {
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  color: var(--danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger-soft);
+}
+
+.btn-danger-fill {
+  border: 0;
+  background: var(--danger-fill);
+  color: #ffffff;
+}
+
+/* 보내는 동안 막힌 버튼 (DS-10) */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 지금 상태 버튼: 회색으로 채우고 흐리게 하지 않음 (DS-09). 보내는 동안에는 DS-10을 따릅니다. */
+.btn-current,
+.btn-current:hover:not(:disabled) {
+  border-color: var(--current-bg);
+  background: var(--current-bg);
+  color: var(--current-text);
+}
+
+.btn-current:disabled:not([data-busy]) {
+  opacity: 1;
+  cursor: default;
+}
+
+/* 화면 모드 스위치 (DESIGN.md "화면 모드 스위치", S-28) */
+.theme-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: auto;
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+}
+
+.switch-track {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--switch-off);
+  transition: background-color 0.15s;
+}
+
+.switch-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.15s;
+}
+
+.theme-switch[aria-checked='true'] .switch-track {
+  background: var(--accent);
+}
+
+.theme-switch[aria-checked='true'] .switch-track::after {
+  transform: translateX(16px);
+}
+
+/* 만들기 영역 (DESIGN.md "배치") */
 .create-form {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 480px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--panel);
 }
 
-.create-form label {
+.create-foot {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.create-form button {
-  align-self: flex-start;
+.create-foot .btn-primary,
+.edit-buttons .btn-primary {
+  flex: none;
 }
 
+.create-form .btn-primary {
+  height: 36px;
+  padding: 0 16px;
+}
+
+/* 안내 문구 (DESIGN.md "안내 문구 모양") */
 .input-message {
   margin: 0;
+  color: var(--danger);
+  font-size: 14px;
 }
 
+.error {
+  margin: 16px 0 0;
+  padding: 12px;
+  border-left: 3px solid var(--danger);
+  border-radius: 6px;
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.notice {
+  margin: 24px 0 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* 상태 칸 (DS-06, DS-07) */
 .columns {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
   gap: 16px;
+  margin-top: 24px;
 }
 
 .column {
-  flex: 1;
-  min-width: 0;
-  border: 1px solid;
-  padding: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--panel);
 }
 
+.column-todo {
+  --status: var(--status-todo);
+}
+
+.column-doing {
+  --status: var(--status-doing);
+}
+
+.column-done {
+  --status: var(--status-done);
+}
+
+/* 칸 머리: 상태별 표시색은 여기에만 씁니다 (DS-15, DS-16) */
+.column-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid var(--status);
+}
+
+.column-head h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status);
+}
+
+.column-count {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 카드 (DESIGN.md "모양"). 긴 제목과 설명은 자르지 않고 줄을 바꿉니다 (DS-11). */
 .card {
-  border: 1px solid;
-  padding: 8px;
-  margin-bottom: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
   overflow-wrap: anywhere;
 }
 
 .card h3 {
   margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .card-description {
   margin: 4px 0 0;
+  color: var(--muted);
   white-space: pre-wrap;
-}
-
-.edit-form {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.edit-form label {
-  display: flex;
-  flex-direction: column;
 }
 
 .card-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 8px;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
 }
 
-.notice,
-.error {
-  margin: 16px 0;
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* 카드를 고치는 중 (S-09): 포커스 색 2px 테두리 */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 11px;
+  border: 2px solid var(--focus);
+}
+
+.edit-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+/* 지우기 확인 창 (DESIGN.md "지우기 확인 창") */
+.delete-dialog {
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  padding: 24px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--dialog-shadow);
+}
+
+.delete-dialog::backdrop {
+  background: rgb(31 35 40 / 40%);
+}
+
+:root[data-theme='dark'] .delete-dialog::backdrop {
+  background: rgb(0 0 0 / 60%);
+}
+
+.delete-dialog p {
+  margin: 0 0 24px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 좁은 화면: 칸을 위아래로 쌓습니다 (DS-07) */
+@media (max-width: 719px) {
+  .app {
+    padding: 16px;
+  }
+
+  .columns {
+    grid-template-columns: 1fr;
+  }
 }
